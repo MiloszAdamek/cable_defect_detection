@@ -2,7 +2,6 @@ from pathlib import Path
 
 IMG_EXTENSIONS = [".png", ".jpg", ".jpeg"]
 
-
 def get_image_paths(directory):
     directory = Path(directory)
     image_paths = []
@@ -42,13 +41,12 @@ from torch.utils.data import Dataset
 from PIL import Image
 import torchvision.transforms as transforms
 
-
 class CableDataset(Dataset):
     def __init__(self, image_paths, image_size=256):
         self.image_paths = image_paths
 
         self.transform = transforms.Compose([
-            transforms.Resize((image_size, image_size)),
+            transforms.Resize((image_size, image_size)), # Konwersja obrazów do 256x256
             transforms.ToTensor(),
         ])
 
