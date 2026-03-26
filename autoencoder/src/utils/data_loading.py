@@ -1,4 +1,5 @@
 from pathlib import Path
+from src.utils.config import IMG_SIZE
 
 IMG_EXTENSIONS = [".png", ".jpg", ".jpeg"]
 
@@ -42,7 +43,7 @@ from PIL import Image
 import torchvision.transforms as transforms
 
 class CableDataset(Dataset):
-    def __init__(self, image_paths, image_size=256):
+    def __init__(self, image_paths, image_size=IMG_SIZE):
         self.image_paths = image_paths
 
         self.transform = transforms.Compose([
