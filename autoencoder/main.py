@@ -15,14 +15,15 @@ ADM = AnomalyDetectionModel()
 # ADM.train_model(epochs=80, lr=1e-3, save_path="autoencoder/src/model/autoencoder_cable_dropout.pth")
 
 ADM.load_model("autoencoder/src/model/autoencoder_cable_dropout.pth")
-# ADM.evaluate_model("ssim")
+_, threshold = ADM.evaluate_model("ssim")
+ADM.threshold = threshold  # Ustawiamy optymalny próg
+
 # ADM.evaluate_model("l1_mean")
 # ADM.evaluate_model("l1_top1")
 # ADM.evaluate_model("mse_mean")
 # ADM.evaluate_model_top_k()
 
-
-test_image = "./data/test/bent_wire/011.png"
+test_image = "./data/test/good/005.png"
 
 # Generujemy wykres
 ADM.visualize_defect(test_image)

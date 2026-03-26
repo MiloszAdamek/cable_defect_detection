@@ -30,6 +30,8 @@ class AnomalyDetectionModel:
         # Inicjalizacja architektury sieci
         self.ae = ConvolutionalAutoencoder().to(self.device)
 
+        self.threshold = 0.5
+
     def train_model(self, epochs=20, lr=1e-3, save_path="autoencoder_cable.pth"):
         torch.manual_seed(42)  # Dla powtarzalności wyników
 
@@ -219,28 +221,42 @@ class AnomalyDetectionModel:
         # z [C, H, W] na [H, W, C]
         img_np = img_tensor.squeeze().cpu().numpy().transpose(1, 2, 0)
         rec_np = reconstruction.squeeze().cpu().numpy().transpose(1, 2, 0)
-        
-        # Obliczenie mapy anomalii (błąd L1: wartość bezwzględna różnicy)
+
+        # Obliczenie mapy anomalii (L1)
         diff_map = np.abs(img_np - rec_np)
-        
-        # Uśrednienie po 3 kanałach RGB do jednej płaskiej mapy 2D
         anomaly_map = np.mean(diff_map, axis=-1)
-        
-        fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-        
+
+        # Normalizacja mapy anomalii do zakresu [0, 1]
+        anomaly_map = (anomaly_map - anomaly_map.min()) / (anomaly_map.max() - anomaly_map.min() + 1e-8)
+
+        # Wzmocnienie kontrastu
+        anomaly_map = anomaly_map ** 0.5
+
+        fig, axes = plt.subplots(1, 4, figsize=(18, 5))
+
         axes[0].imshow(img_np)
         axes[0].set_title("Oryginał")
         axes[0].axis('off')
-        
+
         axes[1].imshow(rec_np)
         axes[1].set_title("Rekonstrukcja AE")
         axes[1].axis('off')
-        
+
         im = axes[2].imshow(anomaly_map, cmap='jet')
         axes[2].set_title("Heatmapa błędu (Anomalie)")
         axes[2].axis('off')
-        
         fig.colorbar(im, ax=axes[2], fraction=0.046, pad=0.04)
+
+        axes[3].imshow(img_np)
+        axes[3].imshow(anomaly_map, cmap='jet', alpha=0.5)
+        axes[3].set_title("Overlay Anomalii")
+        axes[3].axis('off')
         
-        plt.tight_layout()
+        score = 1 - ssim(reconstruction, img_tensor, data_range=1.0, size_average=False)
+        score = score.item()
+
+        prediction = "WADA" if score >= self.threshold else "OK"
+
+        plt.suptitle(f"Score: {score:.4f} | Predykcja: {prediction}", fontsize=14)
+        plt.tight_layout()  
         plt.show()
