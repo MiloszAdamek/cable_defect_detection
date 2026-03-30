@@ -24,7 +24,6 @@ AE.threshold = threshold  # Ustawiamy optymalny próg
 
 test_image = "./data/test/cable_swap/005.png"
 
-# Generujemy wykres
 AE.visualize_defect(test_image)
 
 AE.evaluate_segmentation_iou(percentile=0.95)
@@ -33,14 +32,10 @@ AE.evaluate_segmentation_iou(percentile=0.95)
 
 PADIM = AnomalyDetectionModel(model_type="padim", use_clahe=False, use_blur=False)
 
-# Trening (czyli fit Gaussa)
 PADIM.train_model()
 
-# Image-level
 PADIM.evaluate_model()
 
-# Pixel-level
 PADIM.evaluate_segmentation_iou(percentile=0.95)
 
-# Wizualizacja tej samej próbki
 PADIM.visualize_defect(test_image)

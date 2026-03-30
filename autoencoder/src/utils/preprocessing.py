@@ -40,10 +40,7 @@ class GaussianBlur:
 
 
 class CircularMask:
-    """
-    Maskuje tło poza okręgiem — przydatne gdy kabel
-    ma okrągły przekrój a tło wprowadza szum.
-    """
+
     def __init__(self, margin=0.05):
         self.margin = margin
 

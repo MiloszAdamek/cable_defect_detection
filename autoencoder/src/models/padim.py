@@ -6,7 +6,6 @@ import numpy as np
 import cv2
 from src.utils.config import IMG_SIZE
 
-
 class PaDiMModel:
     def __init__(self, device, feature_dim=100):
 
@@ -42,10 +41,6 @@ class PaDiMModel:
 
         torch.manual_seed(42)
 
-    # --------------------------------------------------
-    # FEATURE EXTRACTION
-    # --------------------------------------------------
-
     def extract_features(self, loader):
 
         feats = []
@@ -71,11 +66,7 @@ class PaDiMModel:
                 feats.append(emb.cpu())
 
         return torch.cat(feats, dim=0)
-
-    # --------------------------------------------------
-    # FIT
-    # --------------------------------------------------
-
+    
     def fit(self, train_loader):
 
         print("Training PaDiM...")
@@ -113,10 +104,6 @@ class PaDiMModel:
 
         print("PaDiM fitted")
 
-    # --------------------------------------------------
-    # ANOMALY MAP
-    # --------------------------------------------------
-
     def anomaly_map(self, img_tensor):
 
         with torch.no_grad():
@@ -146,9 +133,8 @@ class PaDiMModel:
 
                 diff = emb[:, h, w] - self.mean[h, w]
 
-                # stabilna wersja Mahalanobisa
                 dist = diff @ self.inv_cov[h, w] @ diff
-                dist = np.maximum(dist, 0)  # zabezpieczenie
+                dist = np.maximum(dist, 0)
                 amap[h, w] = np.sqrt(dist)
 
         # resize do obrazu wejściowego
@@ -161,15 +147,10 @@ class PaDiMModel:
 
         return amap
 
-    # --------------------------------------------------
-    # IMAGE SCORE (lepszy niż max)
-    # --------------------------------------------------
 
     def image_score(self, anomaly_map):
 
         flat = anomaly_map.flatten()
-
-        # stabilniejszy niż max
         score = np.mean(np.sort(flat)[-50:])
 
         return score
