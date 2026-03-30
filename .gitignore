@@ -1,4 +1,4 @@
 .vscode/
 data/
 __pycache__/
-models/
+src/models/trained
