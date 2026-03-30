@@ -1,4 +1,7 @@
 .vscode/
 data/
 __pycache__/
-src/models/trained
+autoencoder/src/models/trained
+
+*.pth
+*.pkl
