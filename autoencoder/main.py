@@ -10,30 +10,34 @@ from src.utils import load_train_paths, CableDataset
 from src.utils import DATA_PATH
 from src.models import AnomalyDetectionModel
 
-AE = AnomalyDetectionModel(model_type="ae", use_clahe=True, use_blur=True)
-# # AE.train_model(epochs=80, lr=1e-3, save_path="autoencoder/src/model/autoencoder_cable_v4.pth")
+# AE = AnomalyDetectionModel(model_type="ae", use_clahe=True, use_blur=True)
+# # # AE.train_model(epochs=80, lr=1e-3, save_path="autoencoder/src/model/autoencoder_cable_v4.pth")
 
-AE.load_model("autoencoder/src/models/trained/autoencoder_cable_dropout.pth")
-_, threshold = AE.evaluate_model("ssim")
-AE.threshold = threshold  # Ustawiamy optymalny próg
+# AE.load_model("autoencoder/src/models/trained/autoencoder_cable_dropout.pth")
+# _, threshold = AE.evaluate_model("ssim")
+# AE.threshold = threshold  # Ustawiamy optymalny próg
 
-# # AE.evaluate_model("l1_mean")
-# # AE.evaluate_model("l1_top1")
-# # AE.evaluate_model("mse_mean")
-# # AE.evaluate_model_top_k()
+# # # AE.evaluate_model("l1_mean")
+# # # AE.evaluate_model("l1_top1")
+# # # AE.evaluate_model("mse_mean")
+# # # AE.evaluate_model_top_k()
 
 test_image = "./data/test/cable_swap/005.png"
 
-AE.visualize_defect(test_image)
+# AE.visualize_defect(test_image)
 
-AE.evaluate_segmentation_iou(percentile=0.95)
+# AE.evaluate_segmentation_iou(percentile=0.95)
 
 # ============================
 
-PADIM = AnomalyDetectionModel(model_type="padim", use_clahe=False, use_blur=False)
+# PADIM = AnomalyDetectionModel(model_type="padim", use_clahe=False, use_blur=False)
 
-PADIM.train_model()
+# PADIM.train_model()
+# PADIM.save_model("autoencoder/src/models/trained/padim_cable.pkl")
 
+# Późniejsze wczytanie
+PADIM = AnomalyDetectionModel(model_type="padim")
+PADIM.load_model("autoencoder/src/models/trained/padim_cable.pkl")
 PADIM.evaluate_model()
 
 PADIM.evaluate_segmentation_iou(percentile=0.95)

@@ -135,14 +135,22 @@ class AnomalyDetectionModel:
         self.save_model(save_path)
 
     def save_model(self, path):
-        torch.save(self.model.state_dict(), path)
-        print(f"Wagi modelu zostały pomyślnie zapisane do: {path}")
+        if self.model_type == "padim":
+            self.model.save(path)
+        else:
+            torch.save(self.model.state_dict(), path)
+        print(f"Model został pomyślnie zapisany do: {path}")
     
     def load_model(self, path):
-        self.model.load_state_dict(torch.load(path, map_location=self.device, weights_only=True))
-        self.model.eval()
+        if self.model_type == "padim":
+            self.model.load(path)
+        else:
+            self.model.load_state_dict(
+                torch.load(path, map_location=self.device, weights_only=True)
+            )
+            self.model.eval()
         print(f"Model został pomyślnie załadowany z: {path}")
-    
+
     def evaluate_model(self, mode="ssim"):
         if self.model_type == "padim":
 

@@ -1,3 +1,6 @@
+import os
+import pickle
+
 import torchvision.models as models
 import torch
 import torch.nn as nn
@@ -154,3 +157,31 @@ class PaDiMModel:
         score = np.mean(np.sort(flat)[-50:])
 
         return score
+    
+    def save(self, path):
+        save_dict = {
+            'mean': self.mean,
+            'inv_cov': self.inv_cov,
+            'selected_idx': self.selected_idx,
+            'feature_dim': self.feature_dim,
+        }
+        
+        os.makedirs(os.path.dirname(path) if os.path.dirname(path) else '.', exist_ok=True)
+        
+        with open(path, 'wb') as f:
+            pickle.dump(save_dict, f)
+        
+        print(f"Model PaDiM zapisany do: {path}")
+
+    def load(self, path):
+        with open(path, 'rb') as f:
+            save_dict = pickle.load(f)
+        
+        self.mean = save_dict['mean']
+        self.inv_cov = save_dict['inv_cov']
+        self.selected_idx = save_dict['selected_idx']
+        
+        if 'feature_dim' in save_dict:
+            self.feature_dim = save_dict['feature_dim']
+        
+        print(f"Model PaDiM wczytany z: {path}")
